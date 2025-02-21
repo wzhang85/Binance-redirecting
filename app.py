@@ -31,7 +31,7 @@ def get_chart(currency):
 
     options.binary_location = chrome_bin
     service = Service(chromedriver_path)
-
+    driver = None
     try:
         driver = webdriver.Chrome(service=service, options=options)
 
@@ -58,7 +58,8 @@ def get_chart(currency):
         svg_html = f"<p>Error loading SVG: {str(e)}</p>"
 
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
 
     return jsonify({"svg": svg_html})
 
