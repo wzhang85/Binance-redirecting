@@ -7,6 +7,9 @@ services:
       # Install Google Chrome
       wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
       apt install -y ./google-chrome-stable_current_amd64.deb
+      # Verify Chrome installation
+      which google-chrome
+      google-chrome --version
       # Install Python dependencies
       pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:5000

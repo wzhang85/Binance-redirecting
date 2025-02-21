@@ -21,7 +21,7 @@ def get_chart(currency):
     """Fetch chart SVG from CoinMarketCap using Selenium"""
 
     # Automatically install compatible chromedriver
-    chromedriver_autoinstaller.install()  # Auto-downloads and sets up chromedriver
+    chromedriver_autoinstaller.install()
 
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
@@ -30,6 +30,9 @@ def get_chart(currency):
     options.add_argument("--disable-gpu")
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--window-size=1920x1080")
+
+    # Explicitly set Google Chrome binary location
+    options.binary_location = "/usr/bin/google-chrome"
 
     driver = None
     try:
