@@ -46,7 +46,7 @@ def check_chrome_installation():
     result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
     chrome_path = result.stdout.strip()
     print(f"Detected Google Chrome at: {chrome_path}")
-    result = subprocess.run(["ls", "-l", "/usr/bin", capture_output=True, text=True)
+    result = subprocess.run(["ls", "-l", "/usr/bin"], capture_output=True, text=True)
     chrome_path = result.stdout.strip()
     print(f"Detected Google Chrome at: {chrome_path}")
     return chrome_path
