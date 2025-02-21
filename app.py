@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 import chromedriver_autoinstaller
+import subprocess
 
 app = Flask(__name__)
 
@@ -15,6 +16,10 @@ BINANCE_BASE_URL = "https://api.binance.com"
 @app.route('/')
 def home():
     return "Binance API Redirect Service is Running!"
+
+@app.route('/env', methods=['GET'])
+def env_vars():
+    return jsonify(dict(os.environ))
 
 @app.route('/binance/<path:endpoint>', methods=['GET', 'POST'])
 def binance_api(endpoint):
@@ -36,12 +41,32 @@ def binance_api(endpoint):
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
 
+# Check if Chrome is installed and accessible
+def is_chrome_installed():
+    try:
+        result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
+        chrome_path = result.stdout.strip()
+        if chrome_path:
+            print(f"Google Chrome found at: {chrome_path}")
+            return chrome_path
+        else:
+            print("Google Chrome not found on PATH.")
+            return None
+    except Exception as e:
+        print(f"Error checking Chrome installation: {e}")
+        return None
+    
 @app.route('/get_chart/<currency>', methods=['GET'])
 def get_chart(currency):
     """Fetch chart SVG from CoinMarketCap using Selenium"""
 
     # Automatically install compatible chromedriver
     chromedriver_autoinstaller.install()
+
+    # Detect Chrome path
+    chrome_path = is_chrome_installed()
+    if not chrome_path:
+        return jsonify({"error": "Google Chrome not found on PATH"}), 500
 
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
@@ -51,8 +76,8 @@ def get_chart(currency):
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--window-size=1920x1080")
 
-    # Explicitly set Google Chrome binary location
-    options.binary_location = "/usr/bin/google-chrome"
+    # Use detected Chrome binary path
+    options.binary_location = chrome_path
 
     driver = None
     try:
