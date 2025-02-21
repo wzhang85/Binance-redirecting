@@ -53,15 +53,9 @@ def check_chrome_installation():
     
 @app.route('/get_chart/<currency>', methods=['GET'])
 def get_chart(currency):
-    chrome_path = check_chrome_installation()
-    if not chrome_path:
-        return jsonify({"error": "Google Chrome not found"}), 500
-    
     """Fetch chart SVG from CoinMarketCap using Selenium"""
 
-    # Automatically install compatible chromedriver
-    chromedriver_autoinstaller.install()
-
+    # Set up Chrome options
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -69,14 +63,16 @@ def get_chart(currency):
     options.add_argument("--disable-gpu")
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--window-size=1920x1080")
-    options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
 
     # Explicitly set Google Chrome binary location
     options.binary_location = "/usr/bin/google-chrome"
 
+    # Use the manually installed ChromeDriver
+    service = Service("/usr/bin/chromedriver")
+
     driver = None
     try:
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(service=service, options=options)
 
         url_map = {
             "xrp": "https://coinmarketcap.com/ja/currencies/xrp/",
