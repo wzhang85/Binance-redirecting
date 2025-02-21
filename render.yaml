@@ -13,3 +13,7 @@ services:
       # Install Python dependencies
       pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:5000
+    envVars:
+      - key: GOOGLE_CHROME_BIN
+        value: /usr/bin/google-chrome
+

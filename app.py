@@ -66,6 +66,7 @@ def get_chart(currency):
     options.add_argument("--disable-gpu")
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--window-size=1920x1080")
+    options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
 
     # Explicitly set Google Chrome binary location
     options.binary_location = "/usr/bin/google-chrome"
