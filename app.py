@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
+import chromedriver_autoinstaller
 
 app = Flask(__name__)
 
@@ -17,6 +18,11 @@ def home():
 
 @app.route('/get_chart/<currency>', methods=['GET'])
 def get_chart(currency):
+    """Fetch chart SVG from CoinMarketCap using Selenium"""
+
+    # Automatically install compatible chromedriver
+    chromedriver_autoinstaller.install()  # Auto-downloads and sets up chromedriver
+
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -25,17 +31,10 @@ def get_chart(currency):
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--window-size=1920x1080")
 
-    # Get Chrome binary and driver paths from environment
-    chrome_bin = os.getenv("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
-    chromedriver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver")
-
-    options.binary_location = chrome_bin
-    service = Service(chromedriver_path)
     driver = None
     try:
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(options=options)
 
-        # Example URL (CoinMarketCap)
         url_map = {
             "xrp": "https://coinmarketcap.com/ja/currencies/xrp/",
             "trx": "https://coinmarketcap.com/ja/currencies/tron/"
@@ -46,7 +45,7 @@ def get_chart(currency):
 
         driver.get(url_map[currency])
 
-        # Wait for SVG chart
+        # Wait for the SVG chart to load
         WebDriverWait(driver, 25).until(
             EC.presence_of_element_located((By.CLASS_NAME, "highcharts-root"))
         )
